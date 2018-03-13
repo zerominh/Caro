@@ -1,0 +1,49 @@
+# Project: Project1
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe -D__DEBUG__
+CC       = gcc.exe -D__DEBUG__
+WINDRES  = windres.exe
+OBJ      = src/main.o src/rect.o src/window.o src/connect.o src/utils.o src/text.o src/menuItem.o src/menu.o
+LINKOBJ  = src/main.o src/rect.o src/window.o src/connect.o src/utils.o src/text.o src/menuItem.o src/menu.o
+LIBS     = -L"C:/Program Files/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -L"C:/dev_lib/SDL2-2.0.7/i686-w64-mingw32/lib" -static-libgcc -L"C:/dev_lib/SDL2-2.0.7/i686-w64-mingw32/lib" -lmingw32 -lSDL2main -lSDL2  -lSDL2_image -lSDL2_ttf -m32 -g3 -s
+INCS     = -I"C:/Program Files/Dev-Cpp/MinGW64/include" -I"C:/Program Files/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/dev_lib/SDL2-2.0.7/i686-w64-mingw32/include/SDL2"
+CXXINCS  = -I"C:/Program Files/Dev-Cpp/MinGW64/include" -I"C:/Program Files/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++" -I"C:/dev_lib/SDL2-2.0.7/i686-w64-mingw32/include/SDL2" -I"C:/dev_lib/SDL2-2.0.7/i686-w64-mingw32/include/SDL2"
+BIN      = Connect.exe
+CXXFLAGS = $(CXXINCS) -m32 -w -Wall -pedantic -g3 -g -std=c++11
+CFLAGS   = $(INCS) -m32 -w -Wall -pedantic -g3 -g -std=c++11
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+src/main.o: src/main.cpp
+	$(CPP) -c src/main.cpp -o src/main.o $(CXXFLAGS)
+
+src/rect.o: src/rect.cpp
+	$(CPP) -c src/rect.cpp -o src/rect.o $(CXXFLAGS)
+
+src/window.o: src/window.cpp
+	$(CPP) -c src/window.cpp -o src/window.o $(CXXFLAGS)
+
+src/connect.o: src/connect.cpp
+	$(CPP) -c src/connect.cpp -o src/connect.o $(CXXFLAGS)
+
+src/utils.o: src/utils.cpp
+	$(CPP) -c src/utils.cpp -o src/utils.o $(CXXFLAGS)
+
+src/text.o: src/text.cpp
+	$(CPP) -c src/text.cpp -o src/text.o $(CXXFLAGS)
+
+src/menuItem.o: src/menuItem.cpp
+	$(CPP) -c src/menuItem.cpp -o src/menuItem.o $(CXXFLAGS)
+
+src/menu.o: src/menu.cpp
+	$(CPP) -c src/menu.cpp -o src/menu.o $(CXXFLAGS)
