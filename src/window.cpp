@@ -88,6 +88,18 @@ void Window::getMousePos(SDL_Event &e, int & x, int & y){
 }
 
 
+bool Window::isClicked(SDL_Event &e){
+	switch(e.type) {
+			case SDL_MOUSEBUTTONDOWN:
+				return true;
+				break;
+			default:
+				return false;
+				break;
+		}
+} 
+
+
 void Window::clear() const {
 	
 	SDL_RenderPresent(Window::renderer);

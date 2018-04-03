@@ -1,5 +1,5 @@
 #include "connect.h"
-#include "utils.h"
+
 
 Connect::Connect()
 {
@@ -97,16 +97,18 @@ void Connect::showResultPlayerVsPlayerMode(Window & window) const {
 	Text text3(Window::renderer, path, 30, message_text, {255, 0, 0, 255});
 	
 	SDL_Event e;
+	clock_t t = clock();
 	switch(_endResult) {
 		case hoaco:
 
 			do {
+				
 				if(SDL_PollEvent(&e)) {
 					window.pollEvents(e);
 				}
 				text1.display(200, 10, Window::renderer);
 				window.clear();
-			} while(!window.isClosed());
+			} while(!window.isClosed() && t + Connect::TIME_ELAPSE >= clock());
 			break;
 			
 		case player1:
@@ -117,7 +119,7 @@ void Connect::showResultPlayerVsPlayerMode(Window & window) const {
 				}
 				text2.display(200, 10, Window::renderer);
 				window.clear();
-			} while(!window.isClosed());
+			} while(!window.isClosed()&& t + Connect::TIME_ELAPSE >= clock());
 
 			break;
 			
@@ -129,7 +131,7 @@ void Connect::showResultPlayerVsPlayerMode(Window & window) const {
 				}
 				text3.display(200, 10, Window::renderer);
 				window.clear();
-			} while(!window.isClosed());
+			} while(!window.isClosed()&& t + Connect::TIME_ELAPSE >= clock());
 			break;
 			
 		default:
@@ -152,16 +154,20 @@ void Connect::showResultPlayerVsComputerMode(Window & window) const {
 	Text text3(Window::renderer, path, 30, message_text, {255, 0, 0, 255});
 	
 	SDL_Event e;
+	clock_t t = clock();
+	std::cout << t << std::endl;
 	switch(_endResult) {
 		case hoaco:
 
 			do {
+
 				if(SDL_PollEvent(&e)) {
 					window.pollEvents(e);
 				}
 				text1.display(200, 10, Window::renderer);
 				window.clear();
-			} while(!window.isClosed());
+//				std::cout << "clock: " << clock() << std::endl;
+			} while(!window.isClosed()&& t + Connect::TIME_ELAPSE >= clock());
 			break;
 			
 		case player1:
@@ -172,7 +178,8 @@ void Connect::showResultPlayerVsComputerMode(Window & window) const {
 				}
 				text2.display(200, 10, Window::renderer);
 				window.clear();
-			} while(!window.isClosed());
+//				std::cout << "clock: " << clock() << std::endl;
+			} while(!window.isClosed()&& t + Connect::TIME_ELAPSE >= clock());
 
 			break;
 			
@@ -184,7 +191,8 @@ void Connect::showResultPlayerVsComputerMode(Window & window) const {
 				}
 				text3.display(200, 10, Window::renderer);
 				window.clear();
-			} while(!window.isClosed());
+				std::cout << "clock: " << clock() << std::endl;
+			} while(!window.isClosed()&& t + Connect::TIME_ELAPSE >= clock());
 			break;
 			
 		default:
@@ -311,7 +319,7 @@ bool Connect::checkDia2(const int & row, const int & column) const {
 		return true;
 	}
 	
-	if(_table[row-1][column+1] == _ || _table[row-5][column+5] == _) {
+	if(_table[row+1][column-1] == _ || _table[row-5][column+5] == _) {
 		return true;
 	}
 	
@@ -377,6 +385,8 @@ void Connect::playVsPlayer(Window & window) {
 				update(c);
 				if(isEndGame()) {
 					showResult(window);
+					
+					
 					break;
 				}
 				
@@ -390,6 +400,371 @@ void Connect::playVsPlayer(Window & window) {
 
 
 
+long Connect::TCDuyetDoc(int i, int j)
+{
+	long sum = 0;
+	int soQuanTa = 0;
+	int soQuanDich = 0;
+	
+	for(int dem = 1; dem < 7 && i + dem < Connect::NUM_CELL_HEIGHT; ++dem)
+	{
+		if(_table[i+dem][j] == _checkerOfComputer) {
+			++soQuanTa;
+		} else if(_table[i+dem][j] == _checkerOfPlayer) {
+			++soQuanDich;
+			break;
+		} else {
+			break;
+		}
+		
+	}
+	
+	for(int dem = 1; dem < 6 && i - dem > 0; ++dem)
+	{
+		if(_table[i-dem][j] == _checkerOfComputer) {
+			++soQuanTa;
+		} else if(_table[i-dem][j] == _checkerOfPlayer) {
+			++soQuanDich;
+			break;
+		} else {
+			break;
+		}
+		
+	}
+	if(soQuanDich == 2) {
+		return 0;
+	}
+	return sum - DEFENCE[soQuanDich] + FIGHT[soQuanTa];
+}
+
+long Connect::TCDuyetNgang(int i, int j)
+{
+	long sum = 0;
+	int soQuanTa = 0;
+	int soQuanDich = 0;
+	
+	for(int dem = 1; dem < 6 && j + dem < Connect::NUM_CELL_WIDTH; ++dem)
+	{
+		if(_table[i][j+dem] == _checkerOfComputer) {
+			++soQuanTa;
+		} else if(_table[i][j+dem] == _checkerOfPlayer) {
+			++soQuanDich;
+			break;
+		} else {
+			break;
+		}
+		
+	}
+	
+	for(int dem = 1; dem < 6 && j - dem > 0; ++dem)
+	{
+		if(_table[i][j-dem] == _checkerOfComputer) {
+			++soQuanTa;
+		} else if(_table[i][j-dem] == _checkerOfPlayer) {
+			++soQuanDich;
+			break;
+		} else {
+			break;
+		}
+		
+	}
+	if(soQuanDich == 2) {
+		return 0;
+	}
+	return sum - DEFENCE[soQuanDich] + FIGHT[soQuanTa];
+}
+
+long Connect::TCDuyetCheoXuoi(int i, int j)
+{
+long sum = 0;
+	int soQuanTa = 0;
+	int soQuanDich = 0;
+	
+	for(int dem = 1; dem < 6 && j + dem < Connect::NUM_CELL_WIDTH && i + dem < Connect::NUM_CELL_HEIGHT; ++dem)
+	{
+		if(_table[i+dem][j+dem] == _checkerOfComputer) {
+			++soQuanTa;
+		} else if(_table[i+dem][j+dem] == _checkerOfPlayer) {
+			++soQuanDich;
+			break;
+		} else {
+			break;
+		}
+		
+	}
+	
+	for(int dem = 1; dem < 6 && i - dem > 0  && j -dem > 0; ++dem)
+	{
+		if(_table[i-dem][j-dem] == _checkerOfComputer) {
+			++soQuanTa;
+		} else if(_table[i-dem][j-dem] == _checkerOfPlayer) {
+			++soQuanDich;
+			break;
+		} else {
+			break;
+		}
+		
+	}
+	if(soQuanDich == 2) {
+		return 0;
+	}
+	return sum - DEFENCE[soQuanDich] + FIGHT[soQuanTa];
+}
+
+long Connect::TCDuyetCheoNguoc(int i, int j)
+{
+	long sum = 0;
+	int soQuanTa = 0;
+	int soQuanDich = 0;
+	
+	for(int dem = 1; dem < 6 && j + dem < Connect::NUM_CELL_WIDTH && i -dem > 0; ++dem)
+	{
+		if(_table[i-dem][j+dem] == _checkerOfComputer) {
+			++soQuanTa;
+		} else if(_table[i-dem][j+dem] == _checkerOfPlayer) {
+			++soQuanDich;
+			break;
+		} else {
+			break;
+		}
+		
+	}
+	
+	for(int dem = 1; dem < 6 && i + dem < Connect::NUM_CELL_HEIGHT && j -dem > 0; ++dem)
+	{
+		if(_table[i+dem][j-dem] == _checkerOfComputer) {
+			++soQuanTa;
+		} else if(_table[i+dem][j-dem] == _checkerOfPlayer) {
+			++soQuanDich;
+			break;
+		} else {
+			break;
+		}
+		
+	}
+	if(soQuanDich == 2) {
+		return 0;
+	}
+	return sum - DEFENCE[soQuanDich] + FIGHT[soQuanTa];
+}
+
+long Connect::caculateFight(int i, int j)
+{
+	return TCDuyetDoc(i, j) + TCDuyetNgang(i, j) + TCDuyetCheoXuoi(i,j) + TCDuyetCheoNguoc(i, j);
+}
+	
+
+
+
+
+
+
+
+
+
+
+
+long Connect::PNDuyetDoc(int i, int j)
+{
+	int soQuanTa = 0;
+	int soQuanDich = 0;
+	
+	for(int dem = 1; dem < 6 && i + dem < Connect::NUM_CELL_HEIGHT; ++dem)
+	{
+		if(_table[i+dem][j] == _checkerOfComputer) {
+			++soQuanTa;
+			break;
+		} else if(_table[i+dem][j] == _checkerOfPlayer) {
+			++soQuanDich;
+		} else {
+			break;
+		}
+		
+	}
+	
+	for(int dem = 1; dem < 6 && i - dem > 0; ++dem)
+	{
+		if(_table[i-dem][j] == _checkerOfComputer) {
+			++soQuanTa;
+			break;
+		} else if(_table[i-dem][j] == _checkerOfPlayer) {
+			++soQuanDich;
+		} else {
+			break;
+		}
+		
+	}
+	if(soQuanTa == 2) {
+		return 0;
+	}
+//	std::cout << "pnd: " <<DEFENCE[soQuanDich] << std::endl;
+	return DEFENCE[soQuanDich];
+}
+
+long Connect::PNDuyetNgang(int i, int j)
+{
+	int soQuanTa = 0;
+	int soQuanDich = 0;
+	
+	for(int dem = 1; dem < 6 && j + dem < Connect::NUM_CELL_WIDTH; ++dem)
+	{
+		if(_table[i][j+dem] == _checkerOfComputer) {
+			++soQuanTa;
+			break;
+		} else if(_table[i][j+dem] == _checkerOfPlayer) {
+			++soQuanDich;
+		} else {
+			break;
+		}
+		
+	}
+	
+	for(int dem = 1; dem < 6 && j - dem > 0; ++dem)
+	{
+		if(_table[i][j-dem] == _checkerOfComputer) {
+			++soQuanTa;
+			break;
+		} else if(_table[i][j-dem] == _checkerOfPlayer) {
+			++soQuanDich;
+			
+		} else {
+			break;
+		}
+		
+	}
+	if(soQuanTa == 2) {
+		return 0;
+	}
+//	std::cout << "pnn: " <<DEFENCE[soQuanDich] << std::endl;
+	return DEFENCE[soQuanDich];
+}
+
+
+
+long Connect::PNDuyetCheoXuoi(int i, int j)
+{
+	int soQuanTa = 0;
+	int soQuanDich = 0;
+	
+	for(int dem = 1; dem < 6 && j + dem < Connect::NUM_CELL_WIDTH && i + dem < Connect::NUM_CELL_HEIGHT; ++dem)
+	{
+		if(_table[i+dem][j+dem] == _checkerOfComputer) {
+			++soQuanTa;
+			break;
+		} else if(_table[i+dem][j+dem] == _checkerOfPlayer) {
+			++soQuanDich;
+		} else {
+			break;
+		}
+		
+	}
+	
+	for(int dem = 1; dem < 6 && i - dem > 0  && j -dem > 0; ++dem)
+	{
+		if(_table[i-dem][j-dem] == _checkerOfComputer) {
+			++soQuanTa;
+			break;
+		} else if(_table[i-dem][j-dem] == _checkerOfPlayer) {
+			++soQuanDich;
+		} else {
+			break;
+		}
+		
+	}
+	if(soQuanTa == 2) {
+		return 0;
+	}
+//	std::cout << "pncx: " <<DEFENCE[soQuanDich] << std::endl;
+	return DEFENCE[soQuanDich];
+}
+
+long Connect::PNDuyetCheoNguoc(int i, int j)
+{
+	int soQuanTa = 0;
+	int soQuanDich = 0;
+	
+	for(int dem = 1; dem < 6 && j + dem < Connect::NUM_CELL_WIDTH && i -dem > 0; ++dem)
+	{
+		if(_table[i-dem][j+dem] == _checkerOfComputer) {
+			++soQuanTa;
+			break;
+		} else if(_table[i-dem][j+dem] == _checkerOfPlayer) {
+			++soQuanDich;
+			
+		} else {
+			break;
+		}
+		
+	}
+	
+	for(int dem = 1; dem < 6 && i + dem < Connect::NUM_CELL_HEIGHT && j -dem > 0; ++dem)
+	{
+		if(_table[i+dem][j-dem] == _checkerOfComputer) {
+			++soQuanTa;
+		} else if(_table[i+dem][j-dem] == _checkerOfPlayer) {
+			++soQuanDich;
+		} else {
+			break;
+		}
+		
+	}
+	if(soQuanTa == 2) {
+		return 0;
+	}
+//	std::cout << "pncn: " <<DEFENCE[soQuanDich] << std::endl;
+	return DEFENCE[soQuanDich];
+}
+
+
+
+
+
+
+
+long Connect::caculateDefence(int i, int j)
+{
+	return PNDuyetDoc(i, j) + PNDuyetNgang(i, j) + PNDuyetCheoXuoi(i,j) + PNDuyetCheoNguoc(i, j);;
+}
+
+void Connect::generateCell(Cell & c)
+{
+	// c.column = 10*Connect::CELL_W;
+	// c.row = 10*Connect::CELL_H;
+
+	long maxScore = -1;
+//	std::cout << "start...." << std::endl;
+	for (int i = 0; i < Connect::NUM_CELL_HEIGHT; ++i)
+	{
+		for (int j = 0; j < Connect::NUM_CELL_WIDTH; ++j)
+		{
+//			std::cout << "check...." << std::endl;
+//			std::cout << "i: " << i << ", j: " << j << std::endl;
+			if(_table[i][j] == _)
+			{
+				long fight, defence ;
+				fight = caculateFight(i, j);
+				defence = caculateDefence(i, j);
+
+				long tempScore = fight > defence ? fight:defence;
+				std::cout << i  << ", " << j << ": " << tempScore << std::endl;
+				if(maxScore <= tempScore) {
+					maxScore = tempScore;
+					c.column = j*Connect::CELL_W;
+					c.row = i*Connect::CELL_H;
+				}
+
+			}
+		}
+	}
+
+
+//	std::cout << "end generateCell...." << std::endl;
+
+
+
+
+}
+
 void Connect::playVsComputer(Window & window) {
 	Rect table(window.getWidth(), window.getHeight(), 0, 0, "res/background.png");
 	Rect cross(Connect::CELL_W, Connect::CELL_H, 0, 0, "res/cross.png");
@@ -398,10 +773,15 @@ void Connect::playVsComputer(Window & window) {
 	while(!window.isClosed()) {
 		Cell c;
 		Utils::pollEvents(window, c.column, c.row);
+		if(_checker == _checkerOfComputer) {
+			generateCell(c);
+		}
 		
 		if(c.column >= 0 && c.row >= 0 && c.column <= Connect::WINDOW_WIDTH && c.row <= Connect::WINDOW_HEIGHT){
+			
 			c.column /= Connect::CELL_W;
-			c.row /= Connect::CELL_H;
+			c.row /= Connect::CELL_H;				
+
 			if(isValidCell(c)){
 
 				update(c);
@@ -417,3 +797,6 @@ void Connect::playVsComputer(Window & window) {
 		Utils::draw(_table, window, table, cross, nought);
 	}	
 }
+
+
+

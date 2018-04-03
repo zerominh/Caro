@@ -18,6 +18,7 @@ public:
 	inline int getHeight() const {return _height;}
 	inline int getWidth() const {return _width;}
 	inline SDL_Window* getSDL_Window() const {return _window;}
+	bool isClicked(SDL_Event &e);
 private:
 	bool init();
 	

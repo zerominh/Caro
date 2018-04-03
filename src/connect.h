@@ -4,11 +4,12 @@
 #include <vector>
 #include "window.h"
 #include "text.h"
-
+#include "utils.h"
+#include <ctime>
+#include <cmath>
 enum End{
 	hoaco, player1, player2
 };
-
 enum Checker{
 	O = -1, _ = 0, X = 1
 };
@@ -32,8 +33,14 @@ class Connect{
 		static	const int WINDOW_WIDTH = CELL_W*NUM_CELL_WIDTH;
 		static	const int WINDOW_HEIGHT = CELL_H*NUM_CELL_HEIGHT;
 		
+		
+		long FIGHT[8] = {0, 3, 24, 192, 1536, 1288, 98304, 786432};
+		long DEFENCE[8] = {0, 1, 9, 81, 729, 6561, 59049, 472392};
+		
 		static	const int COLUMN = NUM_CELL_WIDTH;
 		static	const int ROW = NUM_CELL_HEIGHT;
+		
+		static const int TIME_ELAPSE = 5;
 		
 	public:
 		Connect();
@@ -53,6 +60,22 @@ class Connect{
 		void showResultPlayerVsComputerMode(Window & window) const;
 		
 	private:
+		void generateCell(Cell &);
+		long caculateFight(int, int);
+		long caculateDefence(int, int);
+		long TCDuyetDoc(int, int);
+		long TCDuyetNgang(int, int);
+		long TCDuyetCheoXuoi(int, int);
+		long TCDuyetCheoNguoc(int, int);
+		
+		long PNDuyetDoc(int, int);
+		long PNDuyetNgang(int, int);
+		long PNDuyetCheoXuoi(int, int);
+		long PNDuyetCheoNguoc(int, int);
+		
+		
+		
+	private:
 		bool init();
 		bool checkCol(const int & row, const int & column) const;
 		bool checkRow(const int & row, const int & column) const;
@@ -61,6 +84,7 @@ class Connect{
 		
 	public:
 		int mode = playerVsPlayerMode;
+		
 	private:
 		
 		int ** _table = nullptr;
@@ -69,4 +93,7 @@ class Connect{
 		std::vector<Cell> _history;
 		std::vector<Cell> _historyPlayer1;
 		std::vector<Cell> _historyPlayer2;
+		
+		int _checkerOfPlayer = X;
+		int _checkerOfComputer = O;
 };

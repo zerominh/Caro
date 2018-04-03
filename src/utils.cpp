@@ -8,6 +8,13 @@ void Utils::pollEvents(Window & w, int & x, int & y) {
 	}
 }
 
+//void Utils::pollEventsWindowOnly(Window & w) {
+//	SDL_Event e;
+//	if(SDL_PollEvent(&e)) {
+//		w.pollEvents(e);
+//	}
+//}
+
 void Utils::draw(int**a, Window & window, Rect & table, Rect & cross, Rect & nought)
 {
 	table.draw();
